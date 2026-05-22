@@ -32,6 +32,26 @@ jobs:
       - name: Submit Cloud Build
         working-directory: backend
         run: |
-          gcloud builds submit \
+          BUILD_ID=$(gcloud builds submit \
             --config cloudbuild.yaml \
-            --substitutions _SERVICE_NAME=${{ vars.GCP_CLOUD_RUN_SERVICE }},_REGION=${{ vars.GCP_REGION }},_AR_REPOSITORY=${{ vars.GCP_ARTIFACT_REGISTRY_REPOSITORY }},_IMAGE_NAME=${{ vars.GCP_IMAGE_NAME }},_ASSET_BUCKET=${{ vars.GCP_ASSET_BUCKET }}
+            --async \
+            --format="value(metadata.build.id)" \
+            --substitutions _SERVICE_NAME=${{ vars.GCP_CLOUD_RUN_SERVICE }},_REGION=${{ vars.GCP_REGION }},_AR_REPOSITORY=${{ vars.GCP_ARTIFACT_REGISTRY_REPOSITORY }},_IMAGE_NAME=${{ vars.GCP_IMAGE_NAME }},_ASSET_BUCKET=${{ vars.GCP_ASSET_BUCKET }})
+
+          echo "Build started: ${BUILD_ID}"
+
+          while true; do
+            STATUS=$(gcloud builds describe "${BUILD_ID}" --format="value(status)")
+            echo "Cloud Build status: ${STATUS}"
+
+            if [ "${STATUS}" = "SUCCESS" ]; then
+              break
+            fi
+
+            if [ "${STATUS}" = "FAILURE" ] || [ "${STATUS}" = "CANCELLED" ] || [ "${STATUS}" = "TIMEOUT" ] || [ "${STATUS}" = "EXPIRED" ] || [ "${STATUS}" = "INTERNAL_ERROR" ]; then
+              echo "Cloud Build failed with status: ${STATUS}"
+              exit 1
+            fi
+
+            sleep 10
+          done
