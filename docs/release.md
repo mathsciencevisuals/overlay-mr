@@ -114,7 +114,9 @@ Deploy backend manually:
 
 ```bash
 cd backend
-gcloud builds submit --config cloudbuild.yaml
+gcloud builds submit \
+  --config cloudbuild.yaml \
+  --substitutions _SERVICE_NAME=overlay-backend,_REGION=us-central1,_AR_REPOSITORY=overlay-mr,_IMAGE_NAME=overlay-backend,_ASSET_BUCKET=overlay-mr-assets
 ```
 
 ## GitHub To GCP CI/CD
@@ -131,10 +133,26 @@ Set these GitHub repository secrets:
 - `GCP_WORKLOAD_IDENTITY_PROVIDER`
 - `GCP_SERVICE_ACCOUNT`
 
+Set these GitHub repository variables:
+
+- `GCP_REGION`
+- `GCP_ARTIFACT_REGISTRY_REPOSITORY`
+- `GCP_CLOUD_RUN_SERVICE`
+- `GCP_IMAGE_NAME`
+- `GCP_ASSET_BUCKET`
+
 Recommended approach:
 
 - Use Workload Identity Federation
 - Avoid storing long-lived JSON service account keys in GitHub
+
+Recommended values for this repo:
+
+- `GCP_REGION=us-central1`
+- `GCP_ARTIFACT_REGISTRY_REPOSITORY=overlay-mr`
+- `GCP_CLOUD_RUN_SERVICE=overlay-backend`
+- `GCP_IMAGE_NAME=overlay-backend`
+- `GCP_ASSET_BUCKET=overlay-mr-assets`
 
 ## Current Repo Readiness
 

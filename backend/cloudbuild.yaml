@@ -32,11 +32,18 @@ steps:
       - "0"
       - --max-instances
       - "3"
+      - --port
+      - "8080"
+      - --set-env-vars
+      - ASSET_BUCKET=${_ASSET_BUCKET},SIGNED_URL_TTL_SECONDS=900,GCP_PROJECT_ID=$PROJECT_ID
 
 substitutions:
   _SERVICE_NAME: overlay-backend
   _REGION: us-central1
-  _IMAGE: gcr.io/$PROJECT_ID/overlay-backend
+  _AR_REPOSITORY: overlay-mr
+  _IMAGE_NAME: overlay-backend
+  _ASSET_BUCKET: overlay-mr-assets
+  _IMAGE: ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/${_IMAGE_NAME}
 
 images:
   - ${_IMAGE}
