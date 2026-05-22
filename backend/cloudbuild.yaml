@@ -3,13 +3,13 @@ steps:
     args:
       - build
       - -t
-      - ${_IMAGE}
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/${_IMAGE_NAME}
       - .
 
   - name: gcr.io/cloud-builders/docker
     args:
       - push
-      - ${_IMAGE}
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/${_IMAGE_NAME}
 
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
     entrypoint: gcloud
@@ -18,7 +18,7 @@ steps:
       - deploy
       - ${_SERVICE_NAME}
       - --image
-      - ${_IMAGE}
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/${_IMAGE_NAME}
       - --region
       - ${_REGION}
       - --platform
@@ -43,7 +43,6 @@ substitutions:
   _AR_REPOSITORY: overlay-mr
   _IMAGE_NAME: overlay-backend
   _ASSET_BUCKET: overlay-mr-assets
-  _IMAGE: ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/${_IMAGE_NAME}
 
 images:
-  - ${_IMAGE}
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/${_IMAGE_NAME}
